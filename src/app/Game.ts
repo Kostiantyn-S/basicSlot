@@ -3,11 +3,16 @@ import {Background} from "./components/Background";
 import {config} from "./config/config";
 import {ReelSet} from "./components/ReelSet";
 import {Graphics} from "pixi.js";
+import {UI} from "./components/UI";
 
 export class Game {
     protected app: PIXI.Application;
     protected back: Background;
     protected reelSet: ReelSet;
+    protected ui: UI;
+    public static STATE: string;
+    public static SPIN: string = "SPIN";
+    public static STOP: string = "STOP";
 
     constructor(parent: HTMLElement) {
         this.app = new PIXI.Application({
@@ -23,6 +28,8 @@ export class Game {
         parent.replaceChild(this.app.view, parent.lastElementChild);
         this.registerPixiInspector();
 
+        Game.STATE = Game.STOP;
+
         this.back = new Background();
         this.app.stage.addChild(this.back.backgroundImage);
         this.app.stage.addChild(this.back.reelSetBackImage);
@@ -30,6 +37,17 @@ export class Game {
         this.reelSet = new ReelSet();
         this.app.stage.addChild(this.reelSet);
         this.setReelSetMask();
+
+        this.ui = new UI();
+        this.app.stage.addChild(this.ui);
+        //@ts-ignore
+        this.ui.spinStopButton.on('pointerdown', () => {
+            if(Game.STATE === Game.STOP) {
+                this.reelSet.startSpin();
+                UI.STATE = UI.STOP_STATE;
+                Game.STATE = Game.SPIN;
+            }
+        })
 
         this.onResize(null);
     }

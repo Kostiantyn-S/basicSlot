@@ -10,7 +10,6 @@ export class ReelSet extends PIXI.Container {
     constructor() {
         super();
 
-
         let counter = 0;
         for (let i = 0; i < this.reelsCount; i++) {
             let reel = new Reel(counter);
@@ -21,7 +20,9 @@ export class ReelSet extends PIXI.Container {
 
         this.x = (config.gameWidth - this.width) / 2;
         this.y = (config.gameHeight - this.height - 200) / 2;
+    }
 
+    public startSpin(): void {
         let nextSpinDelay = 0;
         this._reelsArray.forEach((value, index) => {
             TweenLite.to(value, nextSpinDelay, {
@@ -30,6 +31,6 @@ export class ReelSet extends PIXI.Container {
                 }
             });
             nextSpinDelay += config.nextReelSpinDelay;
-        })
+        });
     }
 }
