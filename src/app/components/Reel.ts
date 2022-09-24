@@ -27,7 +27,7 @@ export class Reel extends PIXI.Container implements IReel{
     }
 
     public spin (): void {
-        TweenLite.to(this, config.spinTime, {
+        this.tween = TweenLite.to(this, config.spinTime, {
             onUpdate: this.updateScrolling,
             onComplete: this.finishSpin
         });
@@ -104,5 +104,11 @@ export class Reel extends PIXI.Container implements IReel{
                 }
             }
         });
+    }
+
+    public manualStop(): void {
+        if(this.tween) {
+            this.tween.kill();
+        }
     }
 }

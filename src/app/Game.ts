@@ -5,6 +5,7 @@ import {ReelSet} from "./components/ReelSet";
 import {Graphics} from "pixi.js";
 import {UI} from "./components/UI";
 import {Globals} from "./components/Globals";
+import TweenLite from 'gsap';
 
 export class Game {
     protected app: PIXI.Application;
@@ -49,6 +50,8 @@ export class Game {
             if(this._state === "stop") {
                 this.reelSet.startSpin();
                 Globals.EMITTER.emit("setSpinState");
+            } else {
+                this.reelSet.stopManual();
             }
         })
 
