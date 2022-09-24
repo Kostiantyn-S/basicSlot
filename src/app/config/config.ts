@@ -1,18 +1,12 @@
 export const config = {
     gameWidth: 1280,
     gameHeight: 960,
-    /*reelsPosition: { x: 120, y: 60 },
-    playButtonPosition: { x: 305, y: 470 },
-    selectEasyModePosition: { x: 640, y: 415 },
-    FPSDisplayPosition: { x: 318, y: 20 },
-    totalReels: 5,
-    reelSpinningCycles: 2,
-    reelSpinningSpeedFactor: [5, 10, 15, 20, 30],
-    reelShuffleSpinningSpeedFactor: false,
-    totalReelCells: 7,
-    reelVisibleCells: 3,
-    reelCellHeight: 100,
-    reelCellWidth: 102,
-    reelVerticalPadding: 25,
-    reelHorizontalMargin: 15*/
+    reelsCount: 5,
+    linesCount: 3,
+    additionalLinesCount: 1,
+    symbolWidth: 100,
+    symbolHeight: 100,
+    spinTime: 3,
+    spinStoppingTime: 3,
+    nextReelSpinDelay: 0.5
 };
