@@ -23,8 +23,13 @@ export class Game {
         });
 
         parent.replaceChild(this.app.view, parent.lastElementChild);
+        this.registerPixiInspector();
 
         this.back = new Background();
         this.app.stage.addChild(this.back.backgroundImage);
+    }
+
+    registerPixiInspector() {
+        (window as any).__PIXI_INSPECTOR_GLOBAL_HOOK__ &&  (window as any).__PIXI_INSPECTOR_GLOBAL_HOOK__.register({ PIXI: PIXI });
     }
 }
