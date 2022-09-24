@@ -3,6 +3,7 @@ import {config} from "../config/config";
 import {IReel} from "./interfaces/IReel";
 import {Symbol} from "./Symbol";
 import TweenLite from 'gsap';
+import {Globals} from "./Globals";
 
 export class Reel extends PIXI.Container implements IReel{
     protected linesCount: number;
@@ -94,11 +95,14 @@ export class Reel extends PIXI.Container implements IReel{
     }
 
     stopSpin = () => {
-        if (this.y !== 0) {
-            let duration = this.y/50;
-            TweenLite.to(this, duration, {
-                y: 0
-            });
-        }
+        let duration = this.y/50;
+        TweenLite.to(this, duration, {
+            y: 0,
+            onComplete: () => {
+                if(this.id === 4) {
+                    Globals.EMITTER.emit("setStopState");
+                }
+            }
+        });
     }
 }

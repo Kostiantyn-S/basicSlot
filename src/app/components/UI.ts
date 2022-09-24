@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import {assets} from "../../assets/loader";
+import {Globals} from "./Globals";
 
 export class UI extends PIXI.Container {
     protected _spinStopButton: PIXI.Sprite;
@@ -7,14 +8,18 @@ export class UI extends PIXI.Container {
     protected _spinOver: PIXI.Texture;
     protected _spinPressed: PIXI.Texture;
     protected _stopNormal: PIXI.Texture;
-    public static STATE: string;
-    public static SPIN_STATE: string = "SPIN_STATE";
-    public static STOP_STATE: string = "STOP_STATE";
+    protected _state;
 
     constructor() {
         super();
 
-        UI.STATE = UI.SPIN_STATE;
+        this._state = "stop";
+        Globals.EMITTER.on("setStopState", () => {
+            this._state = "stop";
+            this._spinStopButton.texture = this._spinNormal;
+        }, this).on("setSpinState", () => {
+            this._state = "spin";
+        }, this);
 
         this._spinNormal = PIXI.Texture.from(assets.spinButton.spinNormal);
         this._spinOver = PIXI.Texture.from(assets.spinButton.spinOver);
@@ -32,26 +37,26 @@ export class UI extends PIXI.Container {
         this._spinStopButton.buttonMode = true;
         //@ts-ignore
         this._spinStopButton.on('pointerdown', () => {
-            if(UI.STATE === UI.SPIN_STATE) {
+            if(this._state === "stop") {
                 this._spinStopButton.texture = this._spinPressed;
             } else {
                 this._spinStopButton.texture = this._stopNormal;
             }
         }).on('pointerover', () => {
-            if(UI.STATE === UI.SPIN_STATE) {
+            if(this._state === "stop") {
                 this._spinStopButton.texture = this._spinOver;
             } else {
                 this._spinStopButton.texture = this._stopNormal;
             }
         }).on('pointerout', () => {
-            if(UI.STATE === UI.SPIN_STATE) {
+            if(this._state === "stop") {
                 this._spinStopButton.texture = this._spinNormal;
             } else {
                 this._spinStopButton.texture = this._stopNormal;
             }
         }).on('pointerup', () => {
-            if(UI.STATE === UI.SPIN_STATE) {
-                this._spinStopButton.texture = this._spinOver;
+            if(this._state === "stop") {
+                this._spinStopButton.texture = this._spinNormal;
             } else {
                 this._spinStopButton.texture = this._stopNormal;
             }
