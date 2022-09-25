@@ -7,9 +7,8 @@ import {UI} from "./components/UI";
 import {GameEventEmitter} from "./components/emitter/GameEventEmitter";
 import {Help} from "./components/Help";
 import {MessageTypes} from "./components/emitter/MessageTypes";
-import {Howl, Howler} from 'howler';
+import {Howl} from 'howler';
 import {assets} from "../assets/loader";
-import TweenLite from "gsap";
 
 export class Game {
     protected _app: PIXI.Application;
