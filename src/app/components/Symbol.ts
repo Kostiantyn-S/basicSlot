@@ -27,4 +27,8 @@ export class Symbol extends PIXI.Container implements ISymbol{
     public get symbolImage(): PIXI.Sprite {
         return this._symbolImage;
     }
+
+    public getSymbolId(): string {
+        return this._symbolImage.texture.baseTexture.cacheId.slice(3, 5);
+    }
 }

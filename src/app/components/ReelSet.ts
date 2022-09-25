@@ -29,12 +29,31 @@ export class ReelSet extends PIXI.Container {
                 if(this.isLastReelStopping()) {
                     TweenLite.to(this, 0.7, {
                         onComplete: () => {
-                            GameEventEmitter.EMITTER.emit(MessageTypes.SET_STOP_STATE);
+                            this.checkWin();
                         }
                     })
                 }
             }, this);
         }
+    }
+
+    protected checkWin(): void {
+        let reelMatrix = [];
+        this._reelsArray.forEach((value) => {
+            reelMatrix.push(value.getReelSymbolsIds());
+        });
+        let winLine0 = (reelMatrix[0][2] === reelMatrix[1][2]) && (reelMatrix[1][2] === reelMatrix[2][2]) &&
+            (reelMatrix[2][2] === reelMatrix[3][2]) && (reelMatrix[3][2] === reelMatrix[4][2]);
+
+        let winLine1 = (reelMatrix[0][1] === reelMatrix[1][1]) && (reelMatrix[1][1] === reelMatrix[2][1]) &&
+            (reelMatrix[2][1] === reelMatrix[3][1]) && (reelMatrix[3][1] === reelMatrix[4][1]);
+
+        let winLine2 = (reelMatrix[0][3] === reelMatrix[1][3]) && (reelMatrix[1][3] === reelMatrix[2][3]) &&
+            (reelMatrix[2][3] === reelMatrix[3][3]) && (reelMatrix[3][3] === reelMatrix[4][3]);
+
+        GameEventEmitter.EMITTER.emit(MessageTypes.SHOW_WIN_LINES, [winLine0, winLine1, winLine2], () => {
+            GameEventEmitter.EMITTER.emit(MessageTypes.SET_STOP_STATE);
+        });
     }
 
     protected isLastReelStopping(): boolean {

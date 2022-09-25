@@ -2,13 +2,12 @@ import * as PIXI from 'pixi.js';
 import {assets} from "../../assets/loader";
 import {GameEventEmitter} from "./emitter/GameEventEmitter";
 import {MessageTypes} from "./emitter/MessageTypes";
+import TweenLite from "gsap";
 
 export class Help extends PIXI.Container {
     protected line_0: PIXI.Sprite;
     protected line_1: PIXI.Sprite;
     protected line_2: PIXI.Sprite;
-    protected line_3: PIXI.Sprite;
-    protected line_4: PIXI.Sprite;
     protected winLinesCount: number;
     protected childrenArray: Array<PIXI.Sprite> = [];
     protected _helpBackground: PIXI.Sprite;
@@ -37,6 +36,39 @@ export class Help extends PIXI.Container {
         });
 
         GameEventEmitter.EMITTER.on(MessageTypes.SWITCH_HELP, this.switchHelp, this);
+        GameEventEmitter.EMITTER.on(MessageTypes.SHOW_WIN_LINES, this.showWinLines, this);
+    }
+
+    protected showWinLines(linesArray: Array<boolean>, callBack: Function): void {
+        let cbEmitted: boolean = false;
+
+        linesArray.forEach((value, index, array) => {
+            if(value) {
+                TweenLite.to(this["line_" + index], 1, {
+                    alpha: 1,
+                    onComplete:() => {
+                        TweenLite.to(this["line_" + index], 2, {
+                            onComplete:() => {
+                                TweenLite.to(this["line_" + index], 1, {
+                                    alpha: 0,
+                                    onComplete:() => {
+                                        if(cbEmitted) return;
+                                        callBack();
+                                        cbEmitted = true;
+                                    }
+                                })
+                            }
+                        })
+                    }
+                });
+            } else if(index === array.length - 1) {
+                TweenLite.to(this, 0.5, {
+                    onComplete:() => {
+                        callBack();
+                    }
+                })
+            }
+        });
     }
 
     protected switchHelp(): void {

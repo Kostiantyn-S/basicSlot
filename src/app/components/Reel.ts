@@ -115,4 +115,12 @@ export class Reel extends PIXI.Container implements IReel{
             this.tween.kill();
         }
     }
+
+    public getReelSymbolsIds(): Array<string> {
+        let symbolsIds = [];
+        this.symbols.forEach((value) => {
+            symbolsIds.push(value.getSymbolId());
+        });
+        return symbolsIds;
+    }
 }
