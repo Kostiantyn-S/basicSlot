@@ -7,17 +7,21 @@ import {UI} from "./components/UI";
 import {GameEventEmitter} from "./components/emitter/GameEventEmitter";
 import {Help} from "./components/Help";
 import {MessageTypes} from "./components/emitter/MessageTypes";
+import {Howl, Howler} from 'howler';
+import {assets} from "../assets/loader";
+import TweenLite from "gsap";
 
 export class Game {
-    protected app: PIXI.Application;
-    protected back: Background;
-    protected reelSet: ReelSet;
-    protected ui: UI;
+    protected _app: PIXI.Application;
+    protected _back: Background;
+    protected _reelSet: ReelSet;
+    protected _ui: UI;
     protected _state: string;
-    protected help: Help;
+    protected _help: Help;
+    protected _backgroundMusic: Howl;
 
     constructor(parent: HTMLElement) {
-        this.app = new PIXI.Application({
+        this._app = new PIXI.Application({
             width: config.gameWidth,
             height: config.gameHeight,
             backgroundColor : 0x000000
@@ -27,7 +31,7 @@ export class Game {
             this.onResize(event);
         });
 
-        parent.replaceChild(this.app.view, parent.lastElementChild);
+        parent.replaceChild(this._app.view, parent.lastElementChild);
         this.registerPixiInspector();
 
         this.addGameElements();
@@ -40,14 +44,20 @@ export class Game {
         }, this);
 
         //@ts-ignore
-        this.ui.spinStopButton.on('pointerdown', () => {
+        this._ui.spinStopButton.on('pointerdown', () => {
             if(this._state === "stop") {
                 GameEventEmitter.EMITTER.emit(MessageTypes.SET_SPIN_STATE);
-                this.reelSet.startSpin();
+                this._reelSet.startSpin();
             } else {
-                this.reelSet.stopManual();
+                this._reelSet.stopManual();
             }
         });
+
+        GameEventEmitter.EMITTER.on(MessageTypes.SOUND_ON, () => {
+            this._backgroundMusic.volume(1);
+        }, this).on(MessageTypes.SOUND_OFF, () => {
+            this._backgroundMusic.volume(0);
+        }, this);
     }
 
     registerPixiInspector() {
@@ -57,36 +67,43 @@ export class Game {
     setReelSetMask = () => {
         const _mask = new Graphics();
         _mask.beginFill(0xFF3300);
-        _mask.drawRect(this.reelSet.x, this.reelSet.y + config.symbolHeight, this.reelSet.width, this.reelSet.height - config.symbolHeight);
+        _mask.drawRect(this._reelSet.x, this._reelSet.y + config.symbolHeight, this._reelSet.width, this._reelSet.height - config.symbolHeight);
         _mask.endFill();
-        this.app.stage.addChild(_mask);
-        this.reelSet.mask = _mask;
+        this._app.stage.addChild(_mask);
+        this._reelSet.mask = _mask;
     }
 
     onResize = (event) => {
-        this.app.renderer.resize(window.innerWidth, window.innerHeight);
+        this._app.renderer.resize(window.innerWidth, window.innerHeight);
         if((window.innerWidth / config.gameWidth) > (window.innerHeight / config.gameHeight)) {
-            this.app.stage.scale.set(window.innerHeight / config.gameHeight);
+            this._app.stage.scale.set(window.innerHeight / config.gameHeight);
         } else {
-            this.app.stage.scale.set(window.innerWidth / config.gameWidth);
+            this._app.stage.scale.set(window.innerWidth / config.gameWidth);
         }
-        this.app.stage.x = (window.innerWidth - this.app.stage.width) / 2;
-        this.app.stage.y = (window.innerHeight - this.app.stage.height) / 2;
+        this._app.stage.x = (window.innerWidth - this._app.stage.width) / 2;
+        this._app.stage.y = (window.innerHeight - this._app.stage.height) / 2;
     }
 
     protected addGameElements(): void {
-        this.back = new Background();
-        this.app.stage.addChild(this.back);
+        this._back = new Background();
+        this._app.stage.addChild(this._back);
 
-        this.reelSet = new ReelSet();
-        this.app.stage.addChild(this.reelSet);
+        this._reelSet = new ReelSet();
+        this._app.stage.addChild(this._reelSet);
         this.setReelSetMask();
 
-        this.ui = new UI();
-        this.app.stage.addChild(this.ui);
+        this._ui = new UI();
+        this._app.stage.addChild(this._ui);
 
-        this.help = new Help();
-        this.app.stage.addChild(this.help);
+        this._help = new Help();
+        this._app.stage.addChild(this._help);
+
+        this._backgroundMusic = new Howl({
+            src: [assets.backgroundMusic],
+            loop: true,
+            html5: true
+        });
+        this._backgroundMusic.play();
 
         this.onResize(null);
     }

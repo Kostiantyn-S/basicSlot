@@ -14,6 +14,9 @@ export class UI extends PIXI.Container {
     protected _helpOver: PIXI.Texture;
     protected _helpPressed: PIXI.Texture;
     protected _helpButton: PIXI.Sprite;
+    protected _soundButton: PIXI.Sprite;
+    protected _soundOn: PIXI.Texture;
+    protected _soundOff: PIXI.Texture;
 
     constructor() {
         super();
@@ -43,6 +46,9 @@ export class UI extends PIXI.Container {
         this._helpNormal = PIXI.Texture.from(assets.helpButton.helpNormal);
         this._helpOver = PIXI.Texture.from(assets.helpButton.helpOver);
         this._helpPressed = PIXI.Texture.from(assets.helpButton.helpPressed);
+
+        this._soundOn = PIXI.Texture.from(assets.soundButton.soundOn);
+        this._soundOff = PIXI.Texture.from(assets.soundButton.soundOff);
     }
 
     protected createButtons(): void {
@@ -64,8 +70,17 @@ export class UI extends PIXI.Container {
         //@ts-ignore
         this._helpButton.buttonMode = true;
 
+        this._soundButton = new PIXI.Sprite(this._soundOn);
+        this._soundButton.x = 1000;
+        this._soundButton.y = 370;
+        //@ts-ignore
+        this._soundButton.interactive = true;
+        //@ts-ignore
+        this._soundButton.buttonMode = true;
+
         this.addChild(this._spinStopButton);
         this.addChild(this._helpButton);
+        this.addChild(this._soundButton);
     }
 
     protected addButtonsStateListeners(): void {
@@ -106,6 +121,17 @@ export class UI extends PIXI.Container {
             this._helpButton.texture = this._helpNormal;
         }).on('pointerup', () => {
             this._helpButton.texture = this._helpOver;
+        });
+
+        //@ts-ignore
+        this._soundButton.on('pointerdown', () => {
+            if(this._soundButton.texture === this._soundOff) {
+                this._soundButton.texture = this._soundOn;
+                GameEventEmitter.EMITTER.emit(MessageTypes.SOUND_ON);
+            } else {
+                this._soundButton.texture = this._soundOff;
+                GameEventEmitter.EMITTER.emit(MessageTypes.SOUND_OFF);
+            }
         });
     }
 }

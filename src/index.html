@@ -15,8 +15,15 @@
                 <span>SLOT</span>
             </h1>
         </div>
+        <button class="btn" id="btn-start" style="display: none" onclick="start()">
+            Start
+        </button>
     </div>
     <script>
+        function start() {
+            window.onLoadedApp = true;
+        }
+
         particle_no = 25;
 
         window.requestAnimFrame = (function () {
@@ -93,7 +100,10 @@
             if (bar.widths > 350) {
                 if (counter > 215) {
                     reset();
-                    window.onLoadedApp = true;
+                    bar.hue = 126;
+                    bar.widths = 351;
+                    bar.draw();
+                    document.getElementById("btn-start").style.display = "inline-block";
                     return;
                     bar.hue = 0;
                     bar.widths = 0;

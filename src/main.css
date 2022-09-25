@@ -567,3 +567,31 @@ span {
         left: 50%;
     }
 }
+
+.btn {
+    background-color: #ffed66;
+    padding: 15px 40px;
+    border: none;
+    border-radius: 30px;
+    font-family: 'Abel', sans-serif;
+    font-size: 20px;
+    text-decoration: none;
+    text-transform: uppercase;
+    color: #ff5e5b;
+    box-shadow: 0 3px 0 #ff5e5b;
+    cursor: pointer;
+    transition: all 100ms linear;
+    margin-left: 420px;
+    margin-top: 750px;
+}
+.btn:hover {
+    -moz-transform: translateY(-4px);
+    -o-transform: translateY(-4px);
+    -ms-transform: translateY(-4px);
+    -webkit-transform: translateY(-4px);
+    transform: translateY(-4px);
+    box-shadow: 0 7px 0 #ff5e5b;
+}
+.btn:focus {
+    outline: 0;
+}

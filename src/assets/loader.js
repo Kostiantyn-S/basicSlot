@@ -18,6 +18,9 @@ import helpNormal from './images/ui/helpNormal.png';
 import helpOver from './images/ui/helpOver.png';
 import helpPressed from './images/ui/helpPressed.png';
 import helpBackground from './images/helpBackground.png';
+import backgroundMusic from './sound/Antonio Vivaldi - Storm.mp3';
+import soundOn from './images/ui/soundOn.png';
+import soundOff from './images/ui/soundOff.png';
 
 export const assets = {
     back: background,
@@ -49,7 +52,12 @@ export const assets = {
         helpOver: helpOver,
         helpPressed: helpPressed
     },
-    helpBackground: helpBackground
+    helpBackground: helpBackground,
+    backgroundMusic: backgroundMusic,
+    soundButton: {
+        soundOn: soundOn,
+        soundOff: soundOff
+    }
 };
 
 
