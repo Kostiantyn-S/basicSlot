@@ -1,5 +1,5 @@
 import {EventEmitter} from "eventemitter3";
 
-export class Globals {
+export class GameEventEmitter {
     public static EMITTER = new EventEmitter();
 }

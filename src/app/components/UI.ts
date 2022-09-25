@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import {assets} from "../../assets/loader";
-import {Globals} from "./Globals";
-import {MessageTypes} from "./MessageTypes";
+import {GameEventEmitter} from "./emitter/GameEventEmitter";
+import {MessageTypes} from "./emitter/MessageTypes";
 
 export class UI extends PIXI.Container {
     protected _spinStopButton: PIXI.Sprite;
@@ -17,29 +17,58 @@ export class UI extends PIXI.Container {
 
     constructor() {
         super();
-
+        this.prepareTextures();
+        this.createButtons();
+        this.addButtonsStateListeners();
         this._state = "stop";
-        Globals.EMITTER.on("setStopState", () => {
+
+        GameEventEmitter.EMITTER.on(MessageTypes.SET_STOP_STATE, () => {
             this._state = "stop";
             this._spinStopButton.texture = this._spinNormal;
-        }, this).on("setSpinState", () => {
+        }, this).on(MessageTypes.SET_SPIN_STATE, () => {
             this._state = "spin";
         }, this);
+    };
 
+    public get spinStopButton(): PIXI.Sprite {
+        return this._spinStopButton;
+    }
+
+    protected prepareTextures(): void {
         this._spinNormal = PIXI.Texture.from(assets.spinButton.spinNormal);
         this._spinOver = PIXI.Texture.from(assets.spinButton.spinOver);
         this._spinPressed = PIXI.Texture.from(assets.spinButton.spinPressed);
         this._stopNormal = PIXI.Texture.from(assets.stopButton.stopNormal);
 
+        this._helpNormal = PIXI.Texture.from(assets.helpButton.helpNormal);
+        this._helpOver = PIXI.Texture.from(assets.helpButton.helpOver);
+        this._helpPressed = PIXI.Texture.from(assets.helpButton.helpPressed);
+    }
+
+    protected createButtons(): void {
         this._spinStopButton = new PIXI.Sprite(this._spinNormal);
         this._spinStopButton.scale.set(0.5);
         this._spinStopButton.x = 540;
         this._spinStopButton.y = 600;
-
         //@ts-ignore
         this._spinStopButton.interactive = true;
         //@ts-ignore
         this._spinStopButton.buttonMode = true;
+
+        this._helpButton = new PIXI.Sprite(this._helpNormal);
+        this._helpButton.scale.set(0.33);
+        this._helpButton.x = 130;
+        this._helpButton.y = 340;
+        //@ts-ignore
+        this._helpButton.interactive = true;
+        //@ts-ignore
+        this._helpButton.buttonMode = true;
+
+        this.addChild(this._spinStopButton);
+        this.addChild(this._helpButton);
+    }
+
+    protected addButtonsStateListeners(): void {
         //@ts-ignore
         this._spinStopButton.on('pointerdown', () => {
             if(this._state === "stop") {
@@ -67,21 +96,10 @@ export class UI extends PIXI.Container {
             }
         });
 
-        this._helpNormal = PIXI.Texture.from(assets.helpButton.helpNormal);
-        this._helpOver = PIXI.Texture.from(assets.helpButton.helpOver);
-        this._helpPressed = PIXI.Texture.from(assets.helpButton.helpPressed);
-        this._helpButton = new PIXI.Sprite(this._helpNormal);
-        this._helpButton.scale.set(0.33);
-        this._helpButton.x = 130;
-        this._helpButton.y = 340;
-        //@ts-ignore
-        this._helpButton.interactive = true;
-        //@ts-ignore
-        this._helpButton.buttonMode = true;
         //@ts-ignore
         this._helpButton.on('pointerdown', () => {
             this._helpButton.texture = this._helpPressed;
-            Globals.EMITTER.emit(MessageTypes.SWITCH_HELP);
+            GameEventEmitter.EMITTER.emit(MessageTypes.SWITCH_HELP);
         }).on('pointerover', () => {
             this._helpButton.texture = this._helpOver;
         }).on('pointerout', () => {
@@ -89,12 +107,5 @@ export class UI extends PIXI.Container {
         }).on('pointerup', () => {
             this._helpButton.texture = this._helpOver;
         });
-
-        this.addChild(this._spinStopButton);
-        this.addChild(this._helpButton);
-    };
-
-    public get spinStopButton(): PIXI.Sprite {
-        return this._spinStopButton;
     }
 }

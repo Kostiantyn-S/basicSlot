@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import {assets} from "../../assets/loader";
-import {Globals} from "./Globals";
-import {MessageTypes} from "./MessageTypes";
+import {GameEventEmitter} from "./emitter/GameEventEmitter";
+import {MessageTypes} from "./emitter/MessageTypes";
 
 export class Help extends PIXI.Container {
     protected line_0: PIXI.Sprite;
@@ -10,7 +10,7 @@ export class Help extends PIXI.Container {
     protected line_3: PIXI.Sprite;
     protected line_4: PIXI.Sprite;
     protected winLinesCount: number;
-    protected childrensArray: Array<PIXI.Sprite> = [];
+    protected childrenArray: Array<PIXI.Sprite> = [];
     protected _helpBackground: PIXI.Sprite;
 
     constructor() {
@@ -25,22 +25,22 @@ export class Help extends PIXI.Container {
         for (let i = 0; i < this.winLinesCount; i++) {
             this["line_" + i] = PIXI.Sprite.from(assets.winLines[i]);
             this.addChild(this["line_" + i]);
-            this.childrensArray.push(this["line_" + i]);
+            this.childrenArray.push(this["line_" + i]);
         }
 
         this.scale.set(0.33, 0.356);
         this.x = 340;
         this.y = 265;
 
-        this.childrensArray.forEach((value) => {
+        this.childrenArray.forEach((value) => {
             value.alpha = 0;
         });
 
-        Globals.EMITTER.on(MessageTypes.SWITCH_HELP, this.switchHelp, this);
+        GameEventEmitter.EMITTER.on(MessageTypes.SWITCH_HELP, this.switchHelp, this);
     }
 
     protected switchHelp(): void {
-        this.childrensArray.forEach((value) => {
+        this.childrenArray.forEach((value) => {
             value.alpha = value.alpha ? 0 : 1;
         });
         if(this._helpBackground.alpha) {

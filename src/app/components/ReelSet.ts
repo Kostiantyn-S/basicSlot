@@ -2,7 +2,8 @@ import * as PIXI from 'pixi.js'
 import {config} from "../config/config";
 import {Reel} from "./Reel";
 import TweenLite from 'gsap';
-import {Globals} from "./Globals";
+import {GameEventEmitter} from "./emitter/GameEventEmitter";
+import {MessageTypes} from "./emitter/MessageTypes";
 
 export class ReelSet extends PIXI.Container {
     protected reelsCount: number = config.reelsCount;
@@ -22,6 +23,32 @@ export class ReelSet extends PIXI.Container {
 
         this.x = (config.gameWidth - this.width) / 2;
         this.y = (config.gameHeight - this.height - 200) / 2;
+
+        for (let i = 0; i < config.reelsCount; i++) {
+            GameEventEmitter.EMITTER.on(MessageTypes.STOPPED_REEL_NUMBER_ + i, () => {
+                if(this.isLastReelStopping()) {
+                    TweenLite.to(this, 0.7, {
+                        onComplete: () => {
+                            GameEventEmitter.EMITTER.emit(MessageTypes.SET_STOP_STATE);
+                        }
+                    })
+                }
+            }, this);
+        }
+    }
+
+    protected isLastReelStopping(): boolean {
+        let stoppedReels = [];
+        this._reelsArray.forEach((value) => {
+            if(!value.spinning) {
+                stoppedReels.push(value.id);
+            }
+        });
+        if(stoppedReels.length === config.reelsCount - 1) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public startSpin(): void {
@@ -33,7 +60,7 @@ export class ReelSet extends PIXI.Container {
                     (value as Reel).spin();
                 }
             });
-            if(index === 4) {
+            if(index === config.reelsCount - 1) {
                 TweenLite.to(this, nextSpinDelay, {
                    onComplete: () => {
                        this._canStopManually = true;

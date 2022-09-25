@@ -4,9 +4,9 @@ import {config} from "./config/config";
 import {ReelSet} from "./components/ReelSet";
 import {Graphics} from "pixi.js";
 import {UI} from "./components/UI";
-import {Globals} from "./components/Globals";
-import TweenLite from 'gsap';
+import {GameEventEmitter} from "./components/emitter/GameEventEmitter";
 import {Help} from "./components/Help";
+import {MessageTypes} from "./components/emitter/MessageTypes";
 
 export class Game {
     protected app: PIXI.Application;
@@ -30,37 +30,24 @@ export class Game {
         parent.replaceChild(this.app.view, parent.lastElementChild);
         this.registerPixiInspector();
 
+        this.addGameElements();
         this._state = "stop";
-        Globals.EMITTER.on("setStopState", () => {
+
+        GameEventEmitter.EMITTER.on(MessageTypes.SET_STOP_STATE, () => {
             this._state = "stop";
-        }, this).on("setSpinState", () => {
+        }, this).on(MessageTypes.SET_SPIN_STATE, () => {
             this._state = "spin";
         }, this);
 
-        this.back = new Background();
-        this.app.stage.addChild(this.back.backgroundImage);
-        this.app.stage.addChild(this.back.reelSetBackImage);
-
-        this.reelSet = new ReelSet();
-        this.app.stage.addChild(this.reelSet);
-        this.setReelSetMask();
-
-        this.ui = new UI();
-        this.app.stage.addChild(this.ui);
         //@ts-ignore
         this.ui.spinStopButton.on('pointerdown', () => {
             if(this._state === "stop") {
+                GameEventEmitter.EMITTER.emit(MessageTypes.SET_SPIN_STATE);
                 this.reelSet.startSpin();
-                Globals.EMITTER.emit("setSpinState");
             } else {
                 this.reelSet.stopManual();
             }
         });
-
-        this.help = new Help();
-        this.app.stage.addChild(this.help);
-
-        this.onResize(null);
     }
 
     registerPixiInspector() {
@@ -85,5 +72,22 @@ export class Game {
         }
         this.app.stage.x = (window.innerWidth - this.app.stage.width) / 2;
         this.app.stage.y = (window.innerHeight - this.app.stage.height) / 2;
+    }
+
+    protected addGameElements(): void {
+        this.back = new Background();
+        this.app.stage.addChild(this.back);
+
+        this.reelSet = new ReelSet();
+        this.app.stage.addChild(this.reelSet);
+        this.setReelSetMask();
+
+        this.ui = new UI();
+        this.app.stage.addChild(this.ui);
+
+        this.help = new Help();
+        this.app.stage.addChild(this.help);
+
+        this.onResize(null);
     }
 }

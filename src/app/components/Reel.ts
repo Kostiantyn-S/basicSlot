@@ -3,13 +3,15 @@ import {config} from "../config/config";
 import {IReel} from "./interfaces/IReel";
 import {Symbol} from "./Symbol";
 import TweenLite from 'gsap';
-import {Globals} from "./Globals";
+import {GameEventEmitter} from "./emitter/GameEventEmitter";
+import {MessageTypes} from "./emitter/MessageTypes";
 
 export class Reel extends PIXI.Container implements IReel{
     protected linesCount: number;
     public id: number;
     protected tween: TweenLite;
     protected symbols: Array<Symbol> = [];
+    public spinning: boolean;
 
     constructor(id: number) {
         super();
@@ -24,9 +26,12 @@ export class Reel extends PIXI.Container implements IReel{
             this.addChild(symbol);
             counter++;
         }
+
+        this.spinning = false;
     }
 
     public spin (): void {
+        this.spinning = true;
         this.tween = TweenLite.to(this, config.spinTime, {
             onUpdate: this.updateScrolling,
             onComplete: this.finishSpin
@@ -99,9 +104,8 @@ export class Reel extends PIXI.Container implements IReel{
         TweenLite.to(this, duration, {
             y: 0,
             onComplete: () => {
-                if(this.id === 4) {
-                    Globals.EMITTER.emit("setStopState");
-                }
+                this.spinning = false;
+                GameEventEmitter.EMITTER.emit(MessageTypes.STOPPED_REEL_NUMBER_ + this.id);
             }
         });
     }
