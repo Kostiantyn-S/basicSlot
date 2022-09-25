@@ -6,6 +6,7 @@ import {Graphics} from "pixi.js";
 import {UI} from "./components/UI";
 import {Globals} from "./components/Globals";
 import TweenLite from 'gsap';
+import {Help} from "./components/Help";
 
 export class Game {
     protected app: PIXI.Application;
@@ -13,6 +14,7 @@ export class Game {
     protected reelSet: ReelSet;
     protected ui: UI;
     protected _state: string;
+    protected help: Help;
 
     constructor(parent: HTMLElement) {
         this.app = new PIXI.Application({
@@ -53,7 +55,10 @@ export class Game {
             } else {
                 this.reelSet.stopManual();
             }
-        })
+        });
+
+        this.help = new Help();
+        this.app.stage.addChild(this.help);
 
         this.onResize(null);
     }

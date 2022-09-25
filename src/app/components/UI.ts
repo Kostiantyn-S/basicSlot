@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
 import {assets} from "../../assets/loader";
 import {Globals} from "./Globals";
+import {MessageTypes} from "./MessageTypes";
 
 export class UI extends PIXI.Container {
     protected _spinStopButton: PIXI.Sprite;
@@ -9,6 +10,10 @@ export class UI extends PIXI.Container {
     protected _spinPressed: PIXI.Texture;
     protected _stopNormal: PIXI.Texture;
     protected _state;
+    protected _helpNormal: PIXI.Texture;
+    protected _helpOver: PIXI.Texture;
+    protected _helpPressed: PIXI.Texture;
+    protected _helpButton: PIXI.Sprite;
 
     constructor() {
         super();
@@ -62,7 +67,31 @@ export class UI extends PIXI.Container {
             }
         });
 
+        this._helpNormal = PIXI.Texture.from(assets.helpButton.helpNormal);
+        this._helpOver = PIXI.Texture.from(assets.helpButton.helpOver);
+        this._helpPressed = PIXI.Texture.from(assets.helpButton.helpPressed);
+        this._helpButton = new PIXI.Sprite(this._helpNormal);
+        this._helpButton.scale.set(0.33);
+        this._helpButton.x = 130;
+        this._helpButton.y = 340;
+        //@ts-ignore
+        this._helpButton.interactive = true;
+        //@ts-ignore
+        this._helpButton.buttonMode = true;
+        //@ts-ignore
+        this._helpButton.on('pointerdown', () => {
+            this._helpButton.texture = this._helpPressed;
+            Globals.EMITTER.emit(MessageTypes.SWITCH_HELP);
+        }).on('pointerover', () => {
+            this._helpButton.texture = this._helpOver;
+        }).on('pointerout', () => {
+            this._helpButton.texture = this._helpNormal;
+        }).on('pointerup', () => {
+            this._helpButton.texture = this._helpOver;
+        });
+
         this.addChild(this._spinStopButton);
+        this.addChild(this._helpButton);
     };
 
     public get spinStopButton(): PIXI.Sprite {
