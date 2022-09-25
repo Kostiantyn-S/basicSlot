@@ -581,8 +581,9 @@ span {
     box-shadow: 0 3px 0 #ff5e5b;
     cursor: pointer;
     transition: all 100ms linear;
-    margin-left: 420px;
-    margin-top: 750px;
+    position: relative;
+    left: 46%;
+    top: 75%;
 }
 .btn:hover {
     -moz-transform: translateY(-4px);
