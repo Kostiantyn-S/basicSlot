@@ -1,15 +1,15 @@
 import {Game} from "./app/Game";
 
-let myGame: Game;
+let myGame: Game = new Game();
 //@ts-ignore
 if(window.onLoadedApp) {
-    myGame = new Game(document.body);
+    myGame.setGame(document.body);
 } else {
     let enterFrame = setInterval((event) => {
         //@ts-ignore
         if(window.onLoadedApp) {
             clearInterval(enterFrame);
-            myGame = new Game(document.body);
+            myGame.setGame(document.body);
             document.getElementById("preloader").style.display = "none";
         }
     })

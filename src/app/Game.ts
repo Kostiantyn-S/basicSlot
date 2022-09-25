@@ -19,7 +19,7 @@ export class Game {
     protected _help: Help;
     protected _backgroundMusic: Howl;
 
-    constructor(parent: HTMLElement) {
+    constructor() {
         this._app = new PIXI.Application({
             width: config.gameWidth,
             height: config.gameHeight,
@@ -30,7 +30,6 @@ export class Game {
             this.onResize(event);
         });
 
-        parent.replaceChild(this._app.view, parent.lastElementChild);
         this.registerPixiInspector();
 
         this.addGameElements();
@@ -57,6 +56,11 @@ export class Game {
         }, this).on(MessageTypes.SOUND_OFF, () => {
             this._backgroundMusic.volume(0);
         }, this);
+    }
+
+    public setGame(parent: HTMLElement): void {
+        parent.replaceChild(this._app.view, parent.lastElementChild);
+        this._backgroundMusic.play();
     }
 
     registerPixiInspector() {
@@ -102,7 +106,6 @@ export class Game {
             loop: true,
             html5: true
         });
-        this._backgroundMusic.play();
 
         this.onResize(null);
     }
